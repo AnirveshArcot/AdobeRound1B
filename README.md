@@ -1,39 +1,38 @@
-#  Challenge 1B – Persona-Driven Document Intelligence
+# 🔍 Challenge 1B – Persona-Driven Document Intelligence
 
 This project extracts the most relevant sections from a group of PDFs using **semantic ranking**, based on a given **persona** and **task**. It is designed for Adobe’s “Connecting the Dots” Hackathon – Challenge 1B.
 
 ---
 
-##  How It Works
+## 🧠 How It Works
 
 - Accepts a `challenge1b_input.json` describing the persona, job-to-be-done, and list of PDFs
 - Parses PDFs for layout-aware line-level content
-- Uses **Sentence-BERT** model (`multi-qa-MiniLM-L6-cos-v1`) to rank sections most relevant to the persona and task
+- Uses a **Sentence-BERT** model (`multi-qa-MiniLM-L6-cos-v1`) to semantically rank sections most relevant to the persona and task
 - Outputs:
-  - Top sections with headings
-  - Semantic-rich summaries for those sections
+  - Top-ranked sections with headings
+  - Semantic-rich summaries of those sections
 
 ---
 
-## Folder Structure
+## 📂 Folder Structure
 
 ```
 Challenge_1b/
 ├── main.py
 ├── Dockerfile
 ├── requirements.txt
-├── Collection 1/
-│   ├── PDFs/
-│   ├── challenge1b_input.json
-│   └── challenge1b_output.json (auto-generated)
-├── Collection 2/
-│   ├── PDFs/
-│   ├── challenge1b_input.json
-│   └── challenge1b_output.json (auto-generated)
-├── Collection 3/
-│   ├── PDFs/
-│   ├── challenge1b_input.json
-│   └── challenge1b_output.json (auto-generated)
+├── input/
+│   ├── Collection 1/
+│   │   ├── PDFs/
+│   │   └── challenge1b_input.json
+│   ├── Collection 2/
+│   ├── Collection 3/
+├── output/
+│   ├── Collection 1/
+│   │   └── challenge1b_output.json (auto-generated)
+│   ├── Collection 2/
+│   ├── Collection 3/
 ```
 
 Each `challenge1b_input.json` should look like:
@@ -61,19 +60,18 @@ docker build --platform linux/amd64 -t pdf-insights:latest .
 
 ### 2. Run the Container
 
-Replace `Collection_1`, `Collection_2`, etc. as needed:
+Mount `input` and `output` folders:
 
 ```bash
 docker run --rm \
-  -v $(pwd)/Collection_1:/app/Collection_1 \
-  -v $(pwd)/Collection_2:/app/Collection_2 \
-  -v $(pwd)/Collection_3:/app/Collection_3 \
+  -v $(pwd)/input:/app/input \
+  -v $(pwd)/output:/app/output \
   pdf-insights:latest
 ```
 
 ---
 
-##  Local Testing (without Docker)
+## 🧪 Local Testing (without Docker)
 
 ### 1. Install Dependencies
 
@@ -89,7 +87,7 @@ python main.py
 
 ---
 
-##  Output Format
+## 📤 Output Format
 
 Each `challenge1b_output.json` includes:
 
@@ -121,18 +119,18 @@ Each `challenge1b_output.json` includes:
 
 ---
 
-##  Features
+## 🔧 Features
 
 - **Semantic similarity** via `SentenceTransformer`
-- **Heading detection** via layout heuristics
-- **Parallel multi-document support**
-- Outputs clean JSON ready for downstream applications
+- **Layout-based heading detection**
+- **Supports multiple collections in parallel**
+- Clean JSON output for downstream pipelines
 
 ---
 
-##  Requirements
+## 📦 Requirements
 
-In `requirements.txt`:
+`requirements.txt`:
 
 ```text
 numpy
@@ -142,9 +140,28 @@ sentence-transformers==2.2.2
 
 ---
 
-## Customization
+## 🛠 Customization
 
-- Modify `TOP_K` and `CTX_LINES` in `main.py` to control how many sections are extracted and how much context to include.
-- Customize heading detection rules for more precision depending on document styles.
+- Modify `TOP_K` and `CTX_LINES` in `main.py` to tune the number of results and context lines.
+- You can refine heading detection logic for your specific document style.
+
+---
+
+## ✅ Notes
+
+- All inputs must be placed inside `/app/input/Collection_X/`
+- All outputs will be written to `/app/output/Collection_X/`
+- PDFs must reside in the same folder as the `challenge1b_input.json` under each collection
+
+```bash
+input/
+└── Collection 1/
+    ├── PDFs/
+    └── challenge1b_input.json
+
+output/
+└── Collection 1/
+    └── challenge1b_output.json
+```
 
 ---
